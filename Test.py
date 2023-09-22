@@ -34,8 +34,6 @@ def main():
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket.setdefaulttimeout(1)
             
-            
-            # returns an error indicator
             result = s.connect_ex((h_ip, port))
             if result ==0:
                 print(f"Port {port} is open")
