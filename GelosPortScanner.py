@@ -73,7 +73,6 @@ else:
     for i in sorted_hostlist:
         print(i)
         
-
 # Scan Ports
 
 # Output the status of each port including "port open" or "port closed" \
