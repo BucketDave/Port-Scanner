@@ -72,6 +72,7 @@ else:
     print("-"*50)
     for i in sorted_hostlist:
         print(i)
+        
 
 # Scan Ports
 
