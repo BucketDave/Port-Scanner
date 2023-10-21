@@ -6,6 +6,7 @@ import os
 from colorama import Fore, Back, Style
 import subprocess
 
+# Getting current working envirmoment directory
 cwd = os.getcwd()
 
 # Getting User-input
@@ -22,6 +23,7 @@ def UserInput():
         f"\nSubnet mask: {sub_pre_mask}")
     print("-"*50)
     return sub_pre, sub_pre_mask
+
 # Verifying User-input
 def Verification(sub_pre, sub_pre_mask):
     # Verifying user input
@@ -46,6 +48,7 @@ def Verification(sub_pre, sub_pre_mask):
               "\nPlease enter valid details")
         time.sleep(2)
         return False
+
 #Displaying contents of 'Verification'
 def Displaying(validate):
     # Printing hosts meeting requirements
@@ -81,9 +84,9 @@ def Displaying(validate):
                 sorted_hostlist.append(num)
         # Print sorted list
         print(f"Number of available IPs: [{len(sorted_hostlist)}]")
-        print(f"Listing all [{len(sorted_hostlist)}] IPs")
-        print("-"*50)
+        print(f"Scanning all [{len(sorted_hostlist)}] IPs")
     return sorted_hostlist
+
 # Reading ports from ports.txt file
 def ReadingFile():
     ports = []
@@ -107,6 +110,7 @@ def ReadingFile():
             quit()
         else:
             print(e)
+
 # IP address that are unavailable for port scanning are to be noted as "unavailable" 
 # Checks if ip is 'ping'able
 def IsAlive(ip):
@@ -115,6 +119,16 @@ def IsAlive(ip):
         return True
     else:
         return False
+
+# Getting hostname from ip if 'Alive'
+def IP_Hostname(ip):
+    result = subprocess.run(["tracert", ip], capture_output=True)
+    result = str(result.stdout)
+    result = ((result.split("\\n", 1))[1])
+    result = ((result.split("to ", 1))[1])
+    result = ((result.split(" [", 1))[0])
+    return result
+
 # Scan Ports
 # Output the status of each port including "port open" or "port closed"
 def Scanning(ip: str, port):
@@ -130,29 +144,31 @@ def Scanning(ip: str, port):
         print(f"Port {port} is CLOSED")
     s.close()
 
+
 def Boot():
     while True:
         sub_pre, sub_pre_mask = UserInput()
         validate = Verification(sub_pre, sub_pre_mask)
-
+        
         if validate:
             break
+    
     host_list = Displaying(validate)
     ports = ReadingFile()
 
     for ip in host_list:
         isalive = IsAlive(str(ip))
         if isalive:
-            print(f"Scanning IP [{ip}]")
+            hostname = IP_Hostname(str(ip))
+            print("-"*50)
+            print(f"Scanning IP [{ip}] Hostname: {hostname}")
             for port in ports:
                 print("-"*25)
                 print(f"Scanning Port [{port}]")
                 Scanning(str(ip), port)
             print("-"*50)
         else:
-            print(f"[{ip}] DEADPASS")
+            print(f"[{ip}] Unavailable")
 
-
-Boot()
-
-
+if __name__ == "__main__":
+    Boot()
