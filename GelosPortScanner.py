@@ -9,6 +9,7 @@ import subprocess
 # Getting current working envirmoment directory
 cwd = os.getcwd()
 
+
 # Getting User-input
 def UserInput():
     # Identify the range of computers to be check
@@ -138,14 +139,23 @@ def Scanning(ip: str, port):
     result = s.connect_ex((ip, port))
     if result == 0:
         print(Fore.GREEN + f"Port {port} is OPEN" + Style.RESET_ALL)
+        FileWrite(f"Port {port} is OPEN")
 
         
     else:
         print(f"Port {port} is CLOSED")
     s.close()
 
+def FileWrite(message: str):
+    with open("PortScannerOutput.txt", "a") as w_file:
+        w_file.write(f"{message}\n")
+
+
 
 def Boot():
+    with open("PortScannerOutput.txt", "w"):
+        pass
+    FileWrite("Initited Logging On " + str(datetime.now()))
     while True:
         sub_pre, sub_pre_mask = UserInput()
         validate = Verification(sub_pre, sub_pre_mask)
@@ -162,6 +172,7 @@ def Boot():
             hostname = IP_Hostname(str(ip))
             print("-"*50)
             print(f"Scanning IP [{ip}] Hostname: {hostname}")
+            FileWrite(f"\nScanning IP [{ip}] Hostname: {hostname}")
             for port in ports:
                 print("-"*25)
                 print(f"Scanning Port [{port}]")
