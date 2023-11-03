@@ -56,14 +56,14 @@ def Displaying(validate):
         # Displaying criteria
     print("Generating host IPs in range of user selected network"
         "\nRequirements:"
-        "\n [1] -- Skipping the last 10 host address"
+        "\n [1] -- Skipping the first 10 host address"
         "\n [2] -- Skipping every EVEN IP")
     print("-"*50)
         # Getting all hosts 
     hostlist = list(validate.hosts())
     print(f"All Possible IPs: [{len(hostlist)}]")
     print("-"*50)
-        # Removing last 10 hosts
+        # Removing first 10 hosts
     if len(hostlist) <= 10:
         print(f"Number of host IPs [{len(hostlist)}] is less then or equal to 10"
             "\nCannot carry out requirement [1]"
@@ -72,7 +72,7 @@ def Displaying(validate):
         time.sleep(1)
     else:
         for ip in range(10):
-            hostlist.pop(-1)
+            hostlist.pop(0)
             # New List to hold sorted hosts
         sorted_hostlist = []
             # Sorting host by the value of the last octect
