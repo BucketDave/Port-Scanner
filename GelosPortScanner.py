@@ -5,8 +5,10 @@ import ipaddress
 import os
 from colorama import Fore, Back, Style
 import subprocess
+import win32evtlog
+import win32evtlogutil
 
-# Getting current working envirmoment directory
+# Getting current working environment directory
 cwd = os.getcwd()
 
 # Getting User-input
@@ -144,6 +146,21 @@ def Scanning(ip: str, port):
         print(f"Port {port} is CLOSED")
     s.close()
 
+def EventLogging(ip_address):
+    DUMMY_EVT_APP_NAME = "Gelos Port Scanner"
+    DUMMY_EVT_ID = 0 
+    DUMMY_EVT_CATEG = 1
+    DUMMY_EVT_STRS = [f"{ip_address}"]
+    DUMMY_EVT_DATA = b"Dummy event data"
+
+
+    win32evtlogutil.ReportEvent(
+        DUMMY_EVT_APP_NAME,
+        DUMMY_EVT_ID,
+        eventCategory=DUMMY_EVT_CATEG,
+        eventType=win32evtlog.EVENTLOG_WARNING_TYPE, strings=DUMMY_EVT_STRS,
+        data=DUMMY_EVT_DATA)
+
 
 def Boot():
     while True:
@@ -159,6 +176,7 @@ def Boot():
     for ip in host_list:
         isalive = IsAlive(str(ip))
         if isalive:
+            EventLogging(str(ip))
             hostname = IP_Hostname(str(ip))
             print("-"*50)
             print(f"Scanning IP [{ip}] Hostname: {hostname}")
@@ -172,3 +190,4 @@ def Boot():
 
 if __name__ == "__main__":
     Boot()
+
