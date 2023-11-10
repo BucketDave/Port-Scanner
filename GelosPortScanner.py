@@ -11,6 +11,7 @@ import win32evtlogutil
 # Getting current working environment directory
 cwd = os.getcwd()
 
+
 # Getting User-input
 def UserInput():
     # Identify the range of computers to be check
@@ -57,14 +58,14 @@ def Displaying(validate):
         # Displaying criteria
     print("Generating host IPs in range of user selected network"
         "\nRequirements:"
-        "\n [1] -- Skipping the last 10 host address"
+        "\n [1] -- Skipping the first 10 host address"
         "\n [2] -- Skipping every EVEN IP")
     print("-"*50)
         # Getting all hosts 
     hostlist = list(validate.hosts())
     print(f"All Possible IPs: [{len(hostlist)}]")
     print("-"*50)
-        # Removing last 10 hosts
+        # Removing first 10 hosts
     if len(hostlist) <= 10:
         print(f"Number of host IPs [{len(hostlist)}] is less then or equal to 10"
             "\nCannot carry out requirement [1]"
@@ -73,7 +74,7 @@ def Displaying(validate):
         time.sleep(1)
     else:
         for ip in range(10):
-            hostlist.pop(-1)
+            hostlist.pop(0)
             # New List to hold sorted hosts
         sorted_hostlist = []
             # Sorting host by the value of the last octect
@@ -140,29 +141,23 @@ def Scanning(ip: str, port):
     result = s.connect_ex((ip, port))
     if result == 0:
         print(Fore.GREEN + f"Port {port} is OPEN" + Style.RESET_ALL)
+        FileWrite(f"Port {port} is OPEN")
 
         
     else:
         print(f"Port {port} is CLOSED")
     s.close()
 
-def EventLogging(ip_address):
-    DUMMY_EVT_APP_NAME = "Gelos Port Scanner"
-    DUMMY_EVT_ID = 0 
-    DUMMY_EVT_CATEG = 1
-    DUMMY_EVT_STRS = [f"{ip_address}"]
-    DUMMY_EVT_DATA = b"Dummy event data"
+def FileWrite(message: str):
+    with open("PortScannerOutput.txt", "a") as w_file:
+        w_file.write(f"{message}\n")
 
-
-    win32evtlogutil.ReportEvent(
-        DUMMY_EVT_APP_NAME,
-        DUMMY_EVT_ID,
-        eventCategory=DUMMY_EVT_CATEG,
-        eventType=win32evtlog.EVENTLOG_WARNING_TYPE, strings=DUMMY_EVT_STRS,
-        data=DUMMY_EVT_DATA)
 
 
 def Boot():
+    with open("PortScannerOutput.txt", "w"):
+        pass
+    FileWrite("Initited Logging On " + str(datetime.now()))
     while True:
         sub_pre, sub_pre_mask = UserInput()
         validate = Verification(sub_pre, sub_pre_mask)
@@ -180,6 +175,7 @@ def Boot():
             hostname = IP_Hostname(str(ip))
             print("-"*50)
             print(f"Scanning IP [{ip}] Hostname: {hostname}")
+            FileWrite(f"\nScanning IP [{ip}] Hostname: {hostname}")
             for port in ports:
                 print("-"*25)
                 print(f"Scanning Port [{port}]")
