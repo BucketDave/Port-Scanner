@@ -151,14 +151,14 @@ def FileWrite(message: str):
     with open("PortScannerOutput.txt", "a") as w_file:
         w_file.write(f"{message}\n")
 
-def GelosEventLog(gelos_ipaddress):
+def EventLog(ipaddress):
     try:
         GEL_APP_NAME = "Gelos Port Scanner"
         GEL_EVT_ID = 1 
         GEL_EVT_CATEG = 1
-        GEL_EVT_STRS = [f"{gelos_ipaddress}"]
+        GEL_EVT_STRS = [f"{ipaddress}"]
         nowtime = str(datetime.now())
-        GEL_EVT_DATA = b'Time of scan: ' + nowtime.encode() + b'\n' + b'IP Address: ' + gelos_ipaddress.encode()
+        GEL_EVT_DATA = b'Time of scan: ' + nowtime.encode() + b'\n' + b'IP Address: ' + ipaddress.encode()
 
 
         win32evtlogutil.ReportEvent(
