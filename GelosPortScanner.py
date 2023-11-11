@@ -3,7 +3,6 @@ from datetime import datetime
 import socket
 import ipaddress
 import os
-from colorama import Fore, Back, Style
 import subprocess
 import win32evtlog
 import win32evtlogutil
@@ -140,7 +139,7 @@ def Scanning(ip: str, port):
     
     result = s.connect_ex((ip, port))
     if result == 0:
-        print(Fore.GREEN + f"Port {port} is OPEN" + Style.RESET_ALL)
+        print(f"Port {port} is OPEN")
         FileWrite(f"Port {port} is OPEN")
 
         
@@ -151,6 +150,28 @@ def Scanning(ip: str, port):
 def FileWrite(message: str):
     with open("PortScannerOutput.txt", "a") as w_file:
         w_file.write(f"{message}\n")
+
+def GelosEventLog(gelos_ipaddress):
+    try:
+        GEL_APP_NAME = "Gelos Port Scanner"
+        GEL_EVT_ID = 1 
+        GEL_EVT_CATEG = 1
+        GEL_EVT_STRS = [f"{gelos_ipaddress}"]
+        nowtime = str(datetime.now())
+        GEL_EVT_DATA = b'Time of scan: ' + nowtime.encode() + b'\n' + b'IP Address: ' + gelos_ipaddress.encode()
+
+
+        win32evtlogutil.ReportEvent(
+            GEL_APP_NAME,
+            GEL_EVT_ID,
+            eventCategory=GEL_EVT_CATEG,
+            eventType=win32evtlog.EVENTLOG_WARNING_TYPE,
+            strings=GEL_EVT_STRS,
+            data=GEL_EVT_DATA
+            )
+
+    except Exception as e:
+        pass  # Handle errors gracefully
 
 
 
@@ -171,7 +192,7 @@ def Boot():
     for ip in host_list:
         isalive = IsAlive(str(ip))
         if isalive:
-            EventLogging(str(ip))
+            EventLog(str(ip))
             hostname = IP_Hostname(str(ip))
             print("-"*50)
             print(f"Scanning IP [{ip}] Hostname: {hostname}")
